@@ -5,172 +5,199 @@
 <title>Lekha 🌸</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+body{
+  font-family:'Nunito',sans-serif;
+  height:100vh;
+  overflow:hidden;
+  background:linear-gradient(120deg,#ff9a9e,#fad0c4,#fbc2eb);
+  animation:bgMove 20s infinite alternate;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:url('https://cur.cursors-4u.net/others/oth-1/oth25.cur'),auto;
 }
 
-body {
-  font-family: 'Nunito', sans-serif;
-  height: 100vh;
-  overflow: hidden;
-  background: linear-gradient(120deg, #ff9a9e, #fad0c4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: bgShift 20s infinite alternate;
+@keyframes bgMove{
+  0%{filter:hue-rotate(0deg)}
+  100%{filter:hue-rotate(25deg)}
 }
 
-@keyframes bgShift {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(20deg); }
+.card{
+  background:rgba(255,255,255,0.25);
+  backdrop-filter:blur(14px);
+  padding:45px 35px;
+  border-radius:30px;
+  text-align:center;
+  width:90%;
+  max-width:520px;
+  box-shadow:0 0 80px rgba(255,105,180,0.5);
+  animation:float 6s ease-in-out infinite;
 }
 
-.container {
-  text-align: center;
-  padding: 50px 35px;
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 60px rgba(255, 105, 180, 0.4);
-  animation: float 6s ease-in-out infinite;
-  max-width: 520px;
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-15px)}
 }
 
-@keyframes float {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+h1{
+  color:white;
+  font-size:2.6rem;
+  text-shadow:0 0 25px rgba(255,255,255,0.9);
+  animation:glow 2s infinite alternate;
 }
 
-h1 {
-  font-size: 2.6rem;
-  font-weight: 800;
-  color: #fff;
-  text-shadow: 0 0 20px rgba(255,255,255,0.8);
-  margin-bottom: 15px;
-  animation: glow 2s infinite alternate;
+@keyframes glow{
+  from{text-shadow:0 0 10px white}
+  to{text-shadow:0 0 30px pink}
 }
 
-@keyframes glow {
-  from { text-shadow: 0 0 10px #fff; }
-  to { text-shadow: 0 0 25px #ffb6c1; }
+p{
+  color:white;
+  font-size:1.2rem;
+  margin-top:15px;
+  line-height:1.7;
+  white-space:pre-line;
 }
 
-p {
-  font-size: 1.2rem;
-  color: #fff;
-  line-height: 1.7;
-  white-space: pre-line;
+.heart{
+  font-size:3.5rem;
+  animation:beat 1.4s infinite;
 }
 
-.heart {
-  font-size: 3.5rem;
-  margin-bottom: 10px;
-  animation: beat 1.4s infinite;
+@keyframes beat{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.25)}
 }
 
-@keyframes beat {
-  0%,100% { transform: scale(1); }
-  50% { transform: scale(1.25); }
+button{
+  margin-top:25px;
+  padding:12px 28px;
+  border:none;
+  border-radius:25px;
+  font-size:1rem;
+  font-weight:600;
+  background:#ff6fa5;
+  color:white;
+  cursor:pointer;
+  box-shadow:0 0 20px rgba(255,105,180,0.8);
+  transition:0.3s;
 }
 
-/* Sakura petals */
-.sakura {
-  position: absolute;
-  top: -10%;
-  font-size: 1.5rem;
-  animation: fall linear infinite;
-  opacity: 0.8;
+button:hover{
+  transform:scale(1.1);
+  background:#ff4081;
 }
 
-@keyframes fall {
-  to {
-    transform: translateY(120vh) rotate(360deg);
-  }
+/* Sakura */
+.sakura{
+  position:absolute;
+  top:-10%;
+  animation:fall linear infinite;
+  opacity:0.8;
+}
+
+@keyframes fall{
+  to{transform:translateY(120vh) rotate(360deg)}
+}
+
+/* Stars */
+.star{
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  border-radius:50%;
+  animation:twinkle 3s infinite;
+}
+
+@keyframes twinkle{
+  0%,100%{opacity:0.2}
+  50%{opacity:1}
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2023/03/14/audio_1b4d5edc4f.mp3" type="audio/mp3">
+</audio>
+
+<div class="card" onclick="playMusic()">
   <div class="heart">💗</div>
   <h1 id="title"></h1>
   <p id="text"></p>
+  <div id="actions"></div>
 </div>
 
 <script>
-const petals = ["🌸","🌸","🌸"];
-for(let i=0;i<20;i++){
-  const petal = document.createElement("div");
-  petal.className = "sakura";
-  petal.innerText = petals[Math.floor(Math.random()*petals.length)];
-  petal.style.left = Math.random()*100 + "vw";
-  petal.style.animationDuration = (8 + Math.random()*10) + "s";
-  petal.style.fontSize = (14 + Math.random()*20) + "px";
-  document.body.appendChild(petal);
+/* Sakura */
+for(let i=0;i<25;i++){
+  let s=document.createElement("div");
+  s.className="sakura";
+  s.innerText="🌸";
+  s.style.left=Math.random()*100+"vw";
+  s.style.fontSize=(14+Math.random()*24)+"px";
+  s.style.animationDuration=(8+Math.random()*10)+"s";
+  document.body.appendChild(s);
 }
 
-const story = {
-  3: {
-    title: "Episode 1: A Confession 🌸",
-    text: "Lekha…\n\nIf this were an anime,\nthis would be the moment where the world fades away,\ncherry blossoms fall in slow motion,\nand I finally say what my heart has been screaming.\n\nWill you be mine?"
-  },
-  4: {
-    title: "Episode 2: The Thought of You",
-    text: "No matter where I am,\nyou quietly appear in my mind.\nLike the main theme song I never skip."
-  },
-  5: {
-    title: "Episode 3: Us",
-    text: "Every anime has a couple you root for.\nI hope one day… someone roots for us."
-  },
-  6: {
-    title: "Episode 4: Your Smile",
-    text: "Your smile hits harder than any anime plot twist."
-  },
-  7: {
-    title: "Episode 5: Comfort Arc",
-    text: "Some days are chaotic.\nSome days are calm.\nI want to be there for all of them."
-  },
-  8: {
-    title: "Episode 6: Feelings Growing",
-    text: "If feelings had animation frames,\nmine have been looping since I met you."
-  },
-  9: {
-    title: "Episode 7: Almost a Promise",
-    text: "I don’t want perfect.\nI want you."
-  },
-  10: {
-    title: "Episode 8: Countdown",
-    text: "Valentine’s is close.\nMy heart already knows the answer."
-  },
-  11: {
-    title: "Episode 9: Choose You",
-    text: "Every universe.\nEvery timeline.\nI still choose you."
-  },
-  12: {
-    title: "Episode 10: Two Days Left",
-    text: "This story is almost at its best episode."
-  },
-  13: {
-    title: "Episode 11: The Night Before",
-    text: "Tomorrow feels special.\nBecause you exist."
-  },
-  14: {
-    title: "Final Episode: Valentine’s Day 💖",
-    text: "Lekha…\n\nWill you be my Valentine?\nNot just today.\nBut for every season of life."
-  }
+/* Stars */
+for(let i=0;i<40;i++){
+  let st=document.createElement("div");
+  st.className="star";
+  st.style.top=Math.random()*100+"vh";
+  st.style.left=Math.random()*100+"vw";
+  st.style.animationDelay=Math.random()*3+"s";
+  document.body.appendChild(st);
+}
+
+/* Music */
+function playMusic(){
+  document.getElementById("music").play();
+}
+
+/* Story */
+const story={
+  3:{t:"Episode 1: A Confession 🌸",m:"Lekha…\nIf this were an anime,\nthis is where the music fades,\npetals fall,\nand I finally speak.\n\nWill you be mine?"},
+  4:{t:"Episode 2: You Appear",m:"You appear in my thoughts\nlike a scene I replay."},
+  5:{t:"Episode 3: Us",m:"Every anime has a couple worth rooting for.\nI hope one day it’s us."},
+  6:{t:"Episode 4: Your Smile",m:"Your smile hits harder\nthan any plot twist."},
+  7:{t:"Episode 5: Comfort Arc",m:"I want to be your calm place."},
+  8:{t:"Episode 6: Growing Feelings",m:"My heart has been buffering…\nand it’s you."},
+  9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect.\nI want you."},
+  10:{t:"Episode 8: Countdown",m:"Valentine’s is getting close."},
+  11:{t:"Episode 9: Every Timeline",m:"Every universe.\nStill you."},
+  12:{t:"Episode 10: Two Days Left",m:"Almost there…"},
+  13:{t:"Episode 11: Tonight",m:"Tomorrow changes everything."},
+  14:{t:"Final Episode: Valentine’s 💖",m:"Lekha…\nWill you be my Valentine?\nAnd choose me too?"}
 };
 
-const today = new Date().getDate();
-const episode = story[today] || story[3];
+const d=new Date().getDate();
+const ep=story[d]||story[3];
+document.getElementById("title").innerText=ep.t;
+document.getElementById("text").innerText=ep.m;
 
-document.getElementById("title").innerText = episode.title;
-document.getElementById("text").innerText = episode.text;
+if(d==14){
+  document.getElementById("actions").innerHTML=
+  `<button onclick="yes()">YES 💖</button>
+   <button onclick="no()">NO 🙈</button>`;
+}
+
+function yes(){
+  document.getElementById("text").innerText=
+  "You just made this the happiest ending.\nNew season unlocked 💍💖";
+}
+
+function no(){
+  document.getElementById("text").innerText=
+  "Anime rule #1:\nThe story isn’t over yet 😉";
+}
 </script>
 
 </body>
