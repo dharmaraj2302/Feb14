@@ -122,6 +122,7 @@ button:hover{
   50%{opacity:1}
 }
 
+/* Countdown */
 .countdown{
   margin-top:15px;
   font-size:0.9rem;
@@ -155,9 +156,8 @@ button:hover{
   <button onclick="startExperience()">Tap to start the story 🎶</button>
 </div>
 
-<!-- LOCAL AUDIO FILE -->
-<audio id="music" loop preload="auto">
-  <source src="assets/music.mp3" type="audio/mp3">
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2023/03/14/audio_1b4d5edc4f.mp3" type="audio/mp3">
 </audio>
 
 <div class="card">
@@ -169,13 +169,14 @@ button:hover{
 </div>
 
 <script>
+/* Start experience + audio */
 function startExperience(){
   const audio=document.getElementById("music");
   audio.volume=0;
   audio.play().then(()=>{
     let v=0;
     const fade=setInterval(()=>{
-      if(v>=1) clearInterval(fade);
+      if(v>=1){clearInterval(fade)}
       audio.volume=v;
       v+=0.05;
     },100);
@@ -183,7 +184,7 @@ function startExperience(){
   document.getElementById("audioOverlay").style.display="none";
 }
 
-/* Visuals */
+/* Sakura */
 for(let i=0;i<30;i++){
   const s=document.createElement("div");
   s.className="sakura";
@@ -194,6 +195,7 @@ for(let i=0;i<30;i++){
   document.body.appendChild(s);
 }
 
+/* Stars */
 for(let i=0;i<50;i++){
   const st=document.createElement("div");
   st.className="star";
@@ -206,6 +208,16 @@ for(let i=0;i<50;i++){
 /* Story */
 const story={
   3:{t:"Episode 1: A Confession 🌸",m:"Lekha…\nIf this were an anime,\nthis is where the music fades,\npetals fall,\nand I finally speak.\n\nWill you be mine?"},
+  4:{t:"Episode 2: You Appear",m:"You appear in my thoughts\nlike a scene I replay."},
+  5:{t:"Episode 3: Us",m:"Every anime has a couple worth rooting for.\nI hope one day it’s us."},
+  6:{t:"Episode 4: Your Smile",m:"Your smile hits harder\nthan any plot twist."},
+  7:{t:"Episode 5: Comfort Arc",m:"I want to be your calm place."},
+  8:{t:"Episode 6: Growing Feelings",m:"My heart has been buffering…\nand it’s you."},
+  9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect.\nI want you."},
+  10:{t:"Episode 8: Countdown",m:"Valentine’s is getting close."},
+  11:{t:"Episode 9: Every Timeline",m:"Every universe.\nStill you."},
+  12:{t:"Episode 10: Two Days Left",m:"Almost there…"},
+  13:{t:"Episode 11: Tonight",m:"Tomorrow changes everything."},
   14:{t:"Final Episode: Valentine’s 💖",m:"Lekha…\nWill you be my Valentine?\nAnd choose me too?"}
 };
 
@@ -214,24 +226,48 @@ const ep=story[today]||story[3];
 document.getElementById("title").innerText=ep.t;
 document.getElementById("text").innerText=ep.m;
 
-/* Countdown + midnight refresh */
+if(today===14){
+  document.getElementById("actions").innerHTML=
+  `<button onclick="yes()">YES 💖</button>
+   <button onclick="no()">NO 🙈</button>`;
+}
+
+function yes(){
+  document.getElementById("text").innerText=
+  "You chose the happiest ending.\nNew season unlocked 💍💖";
+}
+
+function no(){
+  document.getElementById("text").innerText=
+  "Anime rule #1:\nThe story isn’t over yet 😉";
+}
+
+/* Countdown */
 function updateCountdown(){
   const now=new Date();
   const midnight=new Date();
   midnight.setHours(24,0,0,0);
   const diff=midnight-now;
+  const h=Math.floor(diff/3600000);
+  const m=Math.floor((diff%3600000)/60000);
   document.getElementById("countdown").innerText=
-    `Next episode unlocks in ${Math.floor(diff/3600000)}h ${Math.floor((diff%3600000)/60000)}m 🌙`;
+    `Next episode unlocks in ${h}h ${m}m 🌙`;
 }
 updateCountdown();
 setInterval(updateCountdown,60000);
 
-setTimeout(()=>{
-  document.body.classList.add("fade-out");
-  setTimeout(()=>location.reload(),1200);
-}, new Date().setHours(24,0,0,0)-Date.now());
+/* Midnight refresh */
+function scheduleMidnightRefresh(){
+  const now=new Date();
+  const midnight=new Date();
+  midnight.setHours(24,0,0,0);
+  setTimeout(()=>{
+    document.body.classList.add("fade-out");
+    setTimeout(()=>location.reload(),1200);
+  },midnight-now);
+}
+scheduleMidnightRefresh();
 </script>
 
 </body>
 </html>
-
