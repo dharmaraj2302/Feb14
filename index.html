@@ -27,9 +27,7 @@ body{
   100%{filter:hue-rotate(25deg)}
 }
 
-.fade-out{
-  opacity:0;
-}
+.fade-out{opacity:0}
 
 .card{
   background:rgba(255,255,255,0.25);
@@ -97,7 +95,7 @@ button:hover{
   background:#ff4081;
 }
 
-/* Sakura petals */
+/* Sakura */
 .sakura{
   position:absolute;
   top:-10%;
@@ -124,21 +122,45 @@ button:hover{
   50%{opacity:1}
 }
 
+/* Countdown */
 .countdown{
   margin-top:15px;
   font-size:0.9rem;
   opacity:0.85;
+}
+
+/* Audio overlay */
+.audio-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(8px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.audio-overlay button{
+  font-size:1.2rem;
+  padding:18px 36px;
+  border-radius:40px;
 }
 </style>
 </head>
 
 <body>
 
+<!-- Audio permission overlay -->
+<div class="audio-overlay" id="audioOverlay">
+  <button onclick="startExperience()">Tap to start the story 🎶</button>
+</div>
+
 <audio id="music" loop>
   <source src="https://cdn.pixabay.com/audio/2023/03/14/audio_1b4d5edc4f.mp3" type="audio/mp3">
 </audio>
 
-<div class="card" onclick="playMusic()">
+<div class="card">
   <div class="heart">💗</div>
   <h1 id="title"></h1>
   <p id="text"></p>
@@ -147,6 +169,21 @@ button:hover{
 </div>
 
 <script>
+/* Start experience + audio */
+function startExperience(){
+  const audio=document.getElementById("music");
+  audio.volume=0;
+  audio.play().then(()=>{
+    let v=0;
+    const fade=setInterval(()=>{
+      if(v>=1){clearInterval(fade)}
+      audio.volume=v;
+      v+=0.05;
+    },100);
+  });
+  document.getElementById("audioOverlay").style.display="none";
+}
+
 /* Sakura */
 for(let i=0;i<30;i++){
   const s=document.createElement("div");
@@ -168,13 +205,7 @@ for(let i=0;i<50;i++){
   document.body.appendChild(st);
 }
 
-/* Music */
-function playMusic(){
-  const m=document.getElementById("music");
-  if(m.paused) m.play();
-}
-
-/* Story episodes */
+/* Story */
 const story={
   3:{t:"Episode 1: A Confession 🌸",m:"Lekha…\nIf this were an anime,\nthis is where the music fades,\npetals fall,\nand I finally speak.\n\nWill you be mine?"},
   4:{t:"Episode 2: You Appear",m:"You appear in my thoughts\nlike a scene I replay."},
@@ -192,11 +223,9 @@ const story={
 
 const today=new Date().getDate();
 const ep=story[today]||story[3];
-
 document.getElementById("title").innerText=ep.t;
 document.getElementById("text").innerText=ep.m;
 
-/* Valentine interaction */
 if(today===14){
   document.getElementById("actions").innerHTML=
   `<button onclick="yes()">YES 💖</button>
@@ -213,13 +242,12 @@ function no(){
   "Anime rule #1:\nThe story isn’t over yet 😉";
 }
 
-/* Countdown to midnight */
+/* Countdown */
 function updateCountdown(){
   const now=new Date();
   const midnight=new Date();
   midnight.setHours(24,0,0,0);
   const diff=midnight-now;
-
   const h=Math.floor(diff/3600000);
   const m=Math.floor((diff%3600000)/60000);
   document.getElementById("countdown").innerText=
@@ -228,17 +256,15 @@ function updateCountdown(){
 updateCountdown();
 setInterval(updateCountdown,60000);
 
-/* Midnight auto refresh with fade */
+/* Midnight refresh */
 function scheduleMidnightRefresh(){
   const now=new Date();
   const midnight=new Date();
   midnight.setHours(24,0,0,0);
-  const timeUntil=midnight-now;
-
   setTimeout(()=>{
     document.body.classList.add("fade-out");
     setTimeout(()=>location.reload(),1200);
-  },timeUntil);
+  },midnight-now);
 }
 scheduleMidnightRefresh();
 </script>
