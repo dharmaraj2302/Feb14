@@ -14,21 +14,15 @@ body{
   font-family:'Nunito',sans-serif;
   height:100vh;
   overflow:hidden;
-  background:linear-gradient(120deg,#ff9a9e,#fad0c4,#fbc2eb);
-  animation:bgMove 20s infinite alternate;
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:opacity 1.2s ease;
-}
-
-@keyframes bgMove{
-  0%{filter:hue-rotate(0deg)}
-  100%{filter:hue-rotate(25deg)}
+  transition:opacity 1.2s ease, background 1.5s ease;
 }
 
 .fade-out{opacity:0}
 
+/* Card */
 .card{
   background:rgba(255,255,255,0.25);
   backdrop-filter:blur(14px);
@@ -54,8 +48,8 @@ h1{
 }
 
 @keyframes glow{
-  from{text-shadow:0 0 10px white}
-  to{text-shadow:0 0 30px pink}
+  from{text-shadow:0 0 10px currentColor}
+  to{text-shadow:0 0 35px currentColor}
 }
 
 p{
@@ -89,11 +83,7 @@ button{
   box-shadow:0 0 20px rgba(255,105,180,0.8);
   transition:0.3s;
 }
-
-button:hover{
-  transform:scale(1.1);
-  background:#ff4081;
-}
+button:hover{transform:scale(1.1)}
 
 /* Sakura */
 .sakura{
@@ -102,31 +92,25 @@ button:hover{
   animation:fall linear infinite;
   opacity:0.8;
 }
-
 @keyframes fall{
   to{transform:translateY(120vh) rotate(360deg)}
 }
 
-/* Stars */
-.star{
-  position:absolute;
-  width:2px;
-  height:2px;
-  background:white;
-  border-radius:50%;
-  animation:twinkle 3s infinite;
+/* Toast */
+.toast{
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.7);
+  color:white;
+  padding:14px 26px;
+  border-radius:30px;
+  font-size:1rem;
+  opacity:0;
+  transition:opacity 0.6s ease;
 }
-
-@keyframes twinkle{
-  0%,100%{opacity:0.2}
-  50%{opacity:1}
-}
-
-.countdown{
-  margin-top:15px;
-  font-size:0.9rem;
-  opacity:0.85;
-}
+.toast.show{opacity:1}
 
 /* Audio overlay */
 .audio-overlay{
@@ -139,7 +123,6 @@ button:hover{
   justify-content:center;
   z-index:999;
 }
-
 .audio-overlay button{
   font-size:1.2rem;
   padding:18px 36px;
@@ -150,12 +133,10 @@ button:hover{
 
 <body>
 
-<!-- Audio permission overlay -->
 <div class="audio-overlay" id="audioOverlay">
   <button onclick="startExperience()">Tap to start the story 🎶</button>
 </div>
 
-<!-- LOCAL AUDIO FILE -->
 <audio id="music" loop preload="auto">
   <source src="assets/music.mp3" type="audio/mpeg">
 </audio>
@@ -165,71 +146,100 @@ button:hover{
   <h1 id="title"></h1>
   <p id="text"></p>
   <div id="actions"></div>
-  <div class="countdown" id="countdown"></div>
 </div>
 
+<div class="toast" id="toast">🌙 New episode unlocked</div>
+
 <script>
-function startExperience(){
-  const audio=document.getElementById("music");
-  audio.volume=0;
-  audio.play().then(()=>{
-    let v=0;
-    const fade=setInterval(()=>{
-      if(v>=1) clearInterval(fade);
-      audio.volume=v;
-      v+=0.05;
-    },100);
-  });
-  document.getElementById("audioOverlay").style.display="none";
+/* ========= EPISODES + THEMES ========= */
+const episodes={
+  3:{t:"Episode 1: A Confession 🌸",m:"Lekha…\nIf this were an anime,\nthis is where the music fades,\npetals fall,\nand I finally speak.\n\nWill you be mine?",
+     bg:"linear-gradient(120deg,#ff9a9e,#fad0c4)",glow:"#ffb6c1"},
+  4:{t:"Episode 2: You Appear",m:"You appear in my thoughts\nlike a scene I replay.",
+     bg:"linear-gradient(120deg,#a18cd1,#fbc2eb)",glow:"#e0b3ff"},
+  5:{t:"Episode 3: Us",m:"Every anime has a couple worth rooting for.\nI hope one day it’s us.",
+     bg:"linear-gradient(120deg,#fad0c4,#ffd1ff)",glow:"#ffd1dc"},
+  6:{t:"Episode 4: Your Smile",m:"Your smile hits harder\nthan any plot twist.",
+     bg:"linear-gradient(120deg,#fbc2eb,#a6c1ee)",glow:"#b9d7ff"},
+  7:{t:"Episode 5: Comfort Arc",m:"I want to be your calm place.",
+     bg:"linear-gradient(120deg,#d4fc79,#96e6a1)",glow:"#b6f2c2"},
+  8:{t:"Episode 6: Growing Feelings",m:"My heart has been buffering…\nand it’s you.",
+     bg:"linear-gradient(120deg,#84fab0,#8fd3f4)",glow:"#a6eaff"},
+  9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect.\nI want you.",
+     bg:"linear-gradient(120deg,#fccb90,#d57eeb)",glow:"#e7a6ff"},
+  10:{t:"Episode 8: Countdown",m:"Valentine’s is getting close.",
+      bg:"linear-gradient(120deg,#fddb92,#d1fdff)",glow:"#fff1b6"},
+  11:{t:"Episode 9: Every Timeline",m:"Every universe.\nStill you.",
+      bg:"linear-gradient(120deg,#a1c4fd,#c2e9fb)",glow:"#b9ddff"},
+  12:{t:"Episode 10: Two Days Left",m:"Almost there…",
+      bg:"linear-gradient(120deg,#fbc8d4,#9795f0)",glow:"#d6c9ff"},
+  13:{t:"Episode 11: Tonight",m:"Tomorrow changes everything.",
+      bg:"linear-gradient(120deg,#667eea,#764ba2)",glow:"#c7b3ff"},
+  14:{t:"Final Episode: Valentine’s 💖",m:"Lekha…\nWill you be my Valentine?\nAnd choose me too?",
+      bg:"linear-gradient(120deg,#ff0844,#ffb199)",glow:"#ffd1dc"}
+};
+
+/* ========= INIT ========= */
+const today=new Date().getDate();
+const ep=episodes[today]||episodes[3];
+
+document.body.style.background=ep.bg;
+document.documentElement.style.setProperty("--glow",ep.glow);
+
+document.getElementById("title").innerText=ep.t;
+document.getElementById("text").innerText=ep.m;
+
+if(today===14){
+  document.getElementById("actions").innerHTML=
+   `<button onclick="yes()">YES 💖</button>
+    <button onclick="no()">NO 🙈</button>`;
 }
 
-/* Visuals */
+/* Sakura */
 for(let i=0;i<30;i++){
   const s=document.createElement("div");
   s.className="sakura";
   s.innerText="🌸";
   s.style.left=Math.random()*100+"vw";
-  s.style.fontSize=(14+Math.random()*24)+"px";
+  s.style.fontSize=(14+Math.random()*22)+"px";
   s.style.animationDuration=(8+Math.random()*10)+"s";
   document.body.appendChild(s);
 }
 
-for(let i=0;i<50;i++){
-  const st=document.createElement("div");
-  st.className="star";
-  st.style.top=Math.random()*100+"vh";
-  st.style.left=Math.random()*100+"vw";
-  st.style.animationDelay=Math.random()*3+"s";
-  document.body.appendChild(st);
+/* Audio */
+function startExperience(){
+  const a=document.getElementById("music");
+  a.volume=0;
+  a.play().then(()=>{
+    let v=0;
+    const f=setInterval(()=>{
+      if(v>=1)clearInterval(f);
+      a.volume=v; v+=0.05;
+    },100);
+  });
+  document.getElementById("audioOverlay").style.display="none";
 }
 
-/* Story */
-const story={
-  3:{t:"Episode 1: A Confession 🌸",m:"Lekha…\nIf this were an anime,\nthis is where the music fades,\npetals fall,\nand I finally speak.\n\nWill you be mine?"},
-  14:{t:"Final Episode: Valentine’s 💖",m:"Lekha…\nWill you be my Valentine?\nAnd choose me too?"}
-};
-
-const today=new Date().getDate();
-const ep=story[today]||story[3];
-document.getElementById("title").innerText=ep.t;
-document.getElementById("text").innerText=ep.m;
-
-/* Countdown + midnight refresh */
-function updateCountdown(){
-  const now=new Date();
-  const midnight=new Date();
-  midnight.setHours(24,0,0,0);
-  const diff=midnight-now;
-  document.getElementById("countdown").innerText=
-    `Next episode unlocks in ${Math.floor(diff/3600000)}h ${Math.floor((diff%3600000)/60000)}m 🌙`;
+/* Valentine actions */
+function yes(){
+  document.getElementById("text").innerText="Happiest ending unlocked 💍💖";
 }
-updateCountdown();
-setInterval(updateCountdown,60000);
+function no(){
+  document.getElementById("text").innerText="Anime rule #1:\nThe story isn’t over yet 😉";
+}
+
+/* Midnight refresh + toast */
+const now=new Date();
+const midnight=new Date();
+midnight.setHours(24,0,0,0);
 
 setTimeout(()=>{
-  document.body.classList.add("fade-out");
-  setTimeout(()=>location.reload(),1200);
-}, new Date().setHours(24,0,0,0)-Date.now());
+  document.getElementById("toast").classList.add("show");
+  setTimeout(()=>{
+    document.body.classList.add("fade-out");
+    setTimeout(()=>location.reload(),1200);
+  },1500);
+}, midnight-now);
 </script>
 
 </body>
