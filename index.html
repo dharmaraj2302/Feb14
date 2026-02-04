@@ -96,6 +96,17 @@ button:hover{transform:scale(1.1)}
   to{transform:translateY(120vh) rotate(360deg)}
 }
 
+/* Bubu */
+.bubu{
+  position:absolute;
+  top:-10%;
+  animation:fallBubu linear infinite;
+  opacity:0.9;
+}
+@keyframes fallBubu{
+  to{transform:translateY(120vh) rotate(-10deg)}
+}
+
 /* Toast */
 .toast{
   position:fixed;
@@ -151,59 +162,70 @@ button:hover{transform:scale(1.1)}
 <div class="toast" id="toast">🌙 New episode unlocked</div>
 
 <script>
-/* ========= EPISODES + THEMES ========= */
+/* ========= EPISODES ========= */
 const episodes={
   3:{t:"Episode 1: A Confession 🌸",m:"Lekha…\nIf this were an anime,\nthis is where the music fades,\npetals fall,\nand I finally speak.\n\nWill you be mine?",
-     bg:"linear-gradient(120deg,#ff9a9e,#fad0c4)",glow:"#ffb6c1"},
+     bg:"linear-gradient(120deg,#ff9a9e,#fad0c4)"},
   4:{t:"Episode 2: You Appear",m:"You appear in my thoughts\nlike a scene I replay.",
-     bg:"linear-gradient(120deg,#a18cd1,#fbc2eb)",glow:"#e0b3ff"},
-  5:{t:"Episode 3: The Us",m:"Every anime has a couple worth rooting for.\nI hope one day it’s us, we gave gone through a lot. \nWe will unite forever said the hero.\nAfterall, our love will never die...",
-     bg:"linear-gradient(120deg,#fad0c4,#ffd1ff)",glow:"#ffd1dc"},
+     bg:"linear-gradient(120deg,#a18cd1,#fbc2eb)"},
+  5:{t:"Episode 3: The Us 🧸💕",m:"Every anime has a couple worth rooting for.\nI hope one day it’s us.\n\nWe’ve been through a lot.\nBut like Bubu,\nI want a life where we hold on,\nsleep peacefully,\nand choose each other every day.",
+     bg:"linear-gradient(120deg,#ffe4ec,#fef6d8)"},
   6:{t:"Episode 4: Your Smile",m:"Your smile hits harder\nthan any plot twist.",
-     bg:"linear-gradient(120deg,#fbc2eb,#a6c1ee)",glow:"#b9d7ff"},
+     bg:"linear-gradient(120deg,#fbc2eb,#a6c1ee)"},
   7:{t:"Episode 5: Comfort Arc",m:"I want to be your calm place.",
-     bg:"linear-gradient(120deg,#d4fc79,#96e6a1)",glow:"#b6f2c2"},
+     bg:"linear-gradient(120deg,#d4fc79,#96e6a1)"},
   8:{t:"Episode 6: Growing Feelings",m:"My heart has been buffering…\nand it’s you.",
-     bg:"linear-gradient(120deg,#84fab0,#8fd3f4)",glow:"#a6eaff"},
+     bg:"linear-gradient(120deg,#84fab0,#8fd3f4)"},
   9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect.\nI want you.",
-     bg:"linear-gradient(120deg,#fccb90,#d57eeb)",glow:"#e7a6ff"},
+     bg:"linear-gradient(120deg,#fccb90,#d57eeb)"},
   10:{t:"Episode 8: Countdown",m:"Valentine’s is getting close.",
-      bg:"linear-gradient(120deg,#fddb92,#d1fdff)",glow:"#fff1b6"},
+      bg:"linear-gradient(120deg,#fddb92,#d1fdff)"},
   11:{t:"Episode 9: Every Timeline",m:"Every universe.\nStill you.",
-      bg:"linear-gradient(120deg,#a1c4fd,#c2e9fb)",glow:"#b9ddff"},
+      bg:"linear-gradient(120deg,#a1c4fd,#c2e9fb)"},
   12:{t:"Episode 10: Two Days Left",m:"Almost there…",
-      bg:"linear-gradient(120deg,#fbc8d4,#9795f0)",glow:"#d6c9ff"},
+      bg:"linear-gradient(120deg,#fbc8d4,#9795f0)"},
   13:{t:"Episode 11: Tonight",m:"Tomorrow changes everything.",
-      bg:"linear-gradient(120deg,#667eea,#764ba2)",glow:"#c7b3ff"},
+      bg:"linear-gradient(120deg,#667eea,#764ba2)"},
   14:{t:"Final Episode: Valentine’s 💖",m:"Lekha…\nWill you be my Valentine?\nAnd choose me too?",
-      bg:"linear-gradient(120deg,#ff0844,#ffb199)",glow:"#ffd1dc"}
+      bg:"linear-gradient(120deg,#ff0844,#ffb199)"}
 };
 
 /* ========= INIT ========= */
-const today=new Date().getDate();
-const ep=episodes[today]||episodes[3];
+const today = new Date().getDate();
+const ep = episodes[today] || episodes[3];
 
-document.body.style.background=ep.bg;
-document.documentElement.style.setProperty("--glow",ep.glow);
+document.body.style.background = ep.bg;
+document.getElementById("title").innerText = ep.t;
+document.getElementById("text").innerText = ep.m;
 
-document.getElementById("title").innerText=ep.t;
-document.getElementById("text").innerText=ep.m;
-
-if(today===14){
-  document.getElementById("actions").innerHTML=
-   `<button onclick="yes()">YES 💖</button>
-    <button onclick="no()">NO 🙈</button>`;
+if(today === 14){
+  document.getElementById("actions").innerHTML =
+    `<button onclick="yes()">YES 💖</button>
+     <button onclick="no()">NO 🙈</button>`;
 }
 
-/* Sakura */
-for(let i=0;i<30;i++){
-  const s=document.createElement("div");
-  s.className="sakura";
-  s.innerText="🌸";
-  s.style.left=Math.random()*100+"vw";
-  s.style.fontSize=(14+Math.random()*22)+"px";
-  s.style.animationDuration=(8+Math.random()*10)+"s";
-  document.body.appendChild(s);
+/* Floating elements */
+if(today === 5){
+  const bubus = ["🧸","💕","🐻","💞"];
+  for(let i=0;i<25;i++){
+    const b=document.createElement("div");
+    b.className="bubu";
+    b.innerText=bubus[Math.floor(Math.random()*bubus.length)];
+    b.style.left=Math.random()*100+"vw";
+    b.style.fontSize=(22+Math.random()*28)+"px";
+    b.style.animationDuration=(10+Math.random()*12)+"s";
+    document.body.appendChild(b);
+  }
+}else{
+  for(let i=0;i<30;i++){
+    const s=document.createElement("div");
+    s.className="sakura";
+    s.innerText="🌸";
+    s.style.left=Math.random()*100+"vw";
+    s.style.fontSize=(14+Math.random()*22)+"px";
+    s.style.animationDuration=(8+Math.random()*10)+"s";
+    document.body.appendChild(s);
+  }
 }
 
 /* Audio */
@@ -228,7 +250,7 @@ function no(){
   document.getElementById("text").innerText="Anime rule #1:\nThe story isn’t over yet 😉";
 }
 
-/* Midnight refresh + toast */
+/* Midnight refresh */
 const now=new Date();
 const midnight=new Date();
 midnight.setHours(24,0,0,0);
