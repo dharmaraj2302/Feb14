@@ -30,7 +30,6 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#000;
   transition:opacity 1.2s ease, background 1.5s ease;
 }
 
@@ -58,21 +57,6 @@ h1{
   color:var(--text-color);
   font-size:2.6rem;
   text-shadow:0 0 20px currentColor;
-  animation:glow 2s infinite alternate;
-}
-
-@keyframes glow{
-  from{text-shadow:0 0 10px currentColor}
-  to{text-shadow:0 0 30px currentColor}
-}
-
-.valentine-glow{
-  animation:finalGlow 1.8s infinite alternate;
-}
-
-@keyframes finalGlow{
-  from{text-shadow:0 0 20px #fff}
-  to{text-shadow:0 0 50px #ffb3d9}
 }
 
 p{
@@ -108,20 +92,24 @@ button{
 }
 button:hover{transform:scale(1.1)}
 
-/* Sakura */
-.sakura,.bubu{
+/* Effects */
+.sakura,.bubu,.rain{
   position:absolute;
   top:-10%;
-  opacity:0.9;
+  opacity:0.8;
 }
 .sakura{animation:fall linear infinite}
 .bubu{animation:fallBubu linear infinite}
+.rain{animation:fallRain linear infinite}
 
 @keyframes fall{
   to{transform:translateY(120vh) rotate(360deg)}
 }
 @keyframes fallBubu{
   to{transform:translateY(120vh) rotate(-10deg)}
+}
+@keyframes fallRain{
+  to{transform:translateY(120vh)}
 }
 
 /* Toast */
@@ -183,9 +171,9 @@ button:hover{transform:scale(1.1)}
 const episodes={
   3:{t:"Episode 1: A Confession 🌸",m:"Lekha…\nIf this were an anime,\nthis is where the music fades,\npetals fall,\nand I finally speak.\n\nWill you be mine?",bg:"#ffd6d6"},
   4:{t:"Episode 2: You Appear",m:"You appear in my thoughts\nlike a scene I replay.",bg:"#e6d9ff"},
-  5:{t:"Episode 3: The Us 🧸💕",m:"Every anime has a couple worth rooting for.\nI hope one day it’s us.\n\nLike Bubu,\nI want a life where we hold on\nand choose each other every day.",bg:"#fff1d6"},
+  5:{t:"Episode 3: The Us 🧸💕",m:"Every anime has a couple worth rooting for.\nI hope one day it’s us.\nLike Bubu,\nI want a life where we hold on\nand choose each other every day.",bg:"#fff1d6"},
   6:{t:"Episode 4: Your Smile",m:"Your smile finds me on ordinary days and turns them gentle.\nIt quiets my doubts, slows my world, and reminds me why I stay.\nIn every version of my story,\nyour smile is where peace begins.",bg:"#e6e1ff"},
-  7:{t:"Episode 5: Comfort Arc",m:"I want to be your calm place.",bg:"#e4ffe4"},
+  7:{t:"Episode 5: Comfort Arc",m:"Not every day needs answers.\nSome days just need someone who stays.\nI don’t want to fix the rain —\nI want to sit beside you,\nlisten to it fall,\nand choose you anyway.",bg:"#2f3e55"},
   8:{t:"Episode 6: Growing Feelings",m:"My heart has been buffering…\nand it’s you.",bg:"#d9f7ff"},
   9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect.\nI want you.",bg:"#f3d9ff"},
   10:{t:"Episode 8: Countdown",m:"Valentine’s is getting close.",bg:"#fff6d9"},
@@ -198,44 +186,44 @@ const episodes={
 /* ========= INIT ========= */
 const today=new Date().getDate();
 const ep=episodes[today]||episodes[3];
-
 document.body.style.background=ep.bg;
 
-/* Auto contrast detection */
+/* Auto contrast */
 function getTextColor(bg){
   const c=bg.replace("#",""); 
   const r=parseInt(c.substr(0,2),16);
   const g=parseInt(c.substr(2,2),16);
   const b=parseInt(c.substr(4,2),16);
-  const luminance=(0.299*r+0.587*g+0.114*b)/255;
-  return luminance>0.65?"#2b2b2b":"#ffffff";
+  const lum=(0.299*r+0.587*g+0.114*b)/255;
+  return lum>0.6?"#2b2b2b":"#ffffff";
 }
 document.documentElement.style.setProperty("--text-color",getTextColor(ep.bg));
 
-const title=document.getElementById("title");
-title.innerText=ep.t;
+document.getElementById("title").innerText=ep.t;
 document.getElementById("text").innerText=ep.m;
 
-/* Valentine glow */
-if(today===14) title.classList.add("valentine-glow");
-
-/* Actions */
-if(today===14){
-  document.getElementById("actions").innerHTML=
-  `<button onclick="yes()">YES 💖</button><button onclick="no()">NO 🙈</button>`;
-}
-
-/* Floating elements */
+/* Effects per day */
 if(today===5){
-  const bubus=["🧸","💕","🐻","💞"];
-  for(let i=0;i<25;i++){
-    const b=document.createElement("div");
-    b.className="bubu";
-    b.innerText=bubus[Math.floor(Math.random()*bubus.length)];
-    b.style.left=Math.random()*100+"vw";
-    b.style.fontSize=(22+Math.random()*28)+"px";
-    b.style.animationDuration=(10+Math.random()*12)+"s";
-    document.body.appendChild(b);
+  ["🧸","💕","🐻","💞"].forEach(e=>{
+    for(let i=0;i<6;i++){
+      const b=document.createElement("div");
+      b.className="bubu";
+      b.innerText=e;
+      b.style.left=Math.random()*100+"vw";
+      b.style.fontSize=(22+Math.random()*26)+"px";
+      b.style.animationDuration=(10+Math.random()*12)+"s";
+      document.body.appendChild(b);
+    }
+  });
+}else if(today===7){
+  for(let i=0;i<40;i++){
+    const r=document.createElement("div");
+    r.className="rain";
+    r.innerText="💧";
+    r.style.left=Math.random()*100+"vw";
+    r.style.fontSize="18px";
+    r.style.animationDuration=(6+Math.random()*6)+"s";
+    document.body.appendChild(r);
   }
 }else{
   for(let i=0;i<30;i++){
@@ -260,7 +248,11 @@ function startExperience(){
   document.getElementById("audioOverlay").style.display="none";
 }
 
-/* Endings */
+/* Valentine actions */
+if(today===14){
+  document.getElementById("actions").innerHTML=
+    `<button onclick="yes()">YES 💖</button><button onclick="no()">NO 🙈</button>`;
+}
 function yes(){document.getElementById("text").innerText="Happiest ending unlocked 💍💖";}
 function no(){document.getElementById("text").innerText="Anime rule #1:\nThe story isn’t over yet 😉";}
 
