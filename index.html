@@ -86,7 +86,13 @@ p{
   top:-10%;
   opacity:0.8;
 }
+
+.sakura{animation:fall linear infinite}
+.bubu{animation:fallBubu linear infinite}
 .rain{animation:fallRain linear infinite}
+
+@keyframes fall{to{transform:translateY(120vh) rotate(360deg)}}
+@keyframes fallBubu{to{transform:translateY(120vh) rotate(-10deg)}}
 @keyframes fallRain{to{transform:translateY(120vh)}}
 
 /* Toast */
@@ -138,6 +144,7 @@ p{
   <div class="heart" id="heart">💗</div>
   <h1 id="title"></h1>
   <p id="text"></p>
+  <div id="actions"></div>
 </div>
 
 <div class="toast" id="toast">🌙 New episode unlocked</div>
@@ -145,16 +152,23 @@ p{
 <script>
 /* ========= EPISODES ========= */
 const episodes={
-  7:{
-    t:"Episode 5: Comfort Arc",
-    m:"Not every day needs answers.\nSome days just need someone who stays.\nI don’t want to fix the rain —\nI want to sit beside you,\nlisten to it fall,\nand choose you anyway.",
-    bg:"#2f3e55"
-  }
+  3:{t:"Episode 1: A Confession 🌸",m:"Lekha…\nIf this were an anime,\nthis is where the music fades,\npetals fall,\nand I finally speak.\n\nWill you be mine?",bg:"#ffd6d6"},
+  4:{t:"Episode 2: You Appear",m:"You appear in my thoughts\nlike a scene I replay.",bg:"#e6d9ff"},
+  5:{t:"Episode 3: The Us 🧸💕",m:"Every anime has a couple worth rooting for.\nI hope one day it’s us.\nLike Bubu,\nI want a life where we hold on\nand choose each other every day.",bg:"#fff1d6"},
+  6:{t:"Episode 4: Your Smile",m:"Your smile finds me on ordinary days and turns them gentle.\nIt quiets my doubts, slows my world, and reminds me why I stay.\nIn every version of my story,\nyour smile is where peace begins.",bg:"#e6e1ff"},
+  7:{t:"Episode 5: Comfort Arc",m:"Not every day needs answers.\nSome days just need someone who stays.\nI don’t want to fix the rain —\nI want to sit beside you,\nlisten to it fall,\nand choose you anyway.",bg:"#2f3e55"},
+  8:{t:"Episode 6: Growing Feelings",m:"My heart has been buffering…\nand it’s you.",bg:"#d9f7ff"},
+  9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect.\nI want you.",bg:"#f3d9ff"},
+  10:{t:"Episode 8: Countdown",m:"Valentine’s is getting close.",bg:"#fff6d9"},
+  11:{t:"Episode 9: Every Timeline",m:"Every universe.\nStill you.",bg:"#e0ecff"},
+  12:{t:"Episode 10: Two Days Left",m:"Almost there…",bg:"#f1e6ff"},
+  13:{t:"Episode 11: Tonight",m:"Tomorrow changes everything.",bg:"#3b3b5f"},
+  14:{t:"Final Episode: Valentine’s 💖",m:"Lekha…\nWill you be my Valentine?\nAnd choose me too?",bg:"#ff5c8a"}
 };
 
 /* ========= INIT ========= */
 const today=new Date().getDate();
-const ep=episodes[today]||episodes[7];
+const ep=episodes[today]||episodes[3];
 document.body.style.background=ep.bg;
 
 /* Auto contrast */
@@ -172,15 +186,39 @@ document.getElementById("title").innerText=ep.t;
 const textEl=document.getElementById("text");
 textEl.innerText=ep.m;
 
-/* Rain */
-for(let i=0;i<40;i++){
-  const r=document.createElement("div");
-  r.className="rain";
-  r.innerText="💧";
-  r.style.left=Math.random()*100+"vw";
-  r.style.fontSize="18px";
-  r.style.animationDuration=(6+Math.random()*6)+"s";
-  document.body.appendChild(r);
+/* Effects per episode */
+if(today===5){
+  ["🧸","💕","🐻","💞"].forEach(e=>{
+    for(let i=0;i<6;i++){
+      const b=document.createElement("div");
+      b.className="bubu";
+      b.innerText=e;
+      b.style.left=Math.random()*100+"vw";
+      b.style.fontSize=(22+Math.random()*26)+"px";
+      b.style.animationDuration=(10+Math.random()*12)+"s";
+      document.body.appendChild(b);
+    }
+  });
+}else if(today===7){
+  for(let i=0;i<40;i++){
+    const r=document.createElement("div");
+    r.className="rain";
+    r.innerText="💧";
+    r.style.left=Math.random()*100+"vw";
+    r.style.fontSize="18px";
+    r.style.animationDuration=(6+Math.random()*6)+"s";
+    document.body.appendChild(r);
+  }
+}else{
+  for(let i=0;i<30;i++){
+    const s=document.createElement("div");
+    s.className="sakura";
+    s.innerText="🌸";
+    s.style.left=Math.random()*100+"vw";
+    s.style.fontSize=(14+Math.random()*22)+"px";
+    s.style.animationDuration=(8+Math.random()*10)+"s";
+    document.body.appendChild(s);
+  }
 }
 
 /* Hidden heart moment */
@@ -188,16 +226,23 @@ let revealed=false;
 document.getElementById("heart").onclick=()=>{
   if(revealed) return;
   revealed=true;
-
   document.body.classList.add("dimmed");
   document.getElementById("card").classList.add("soft-glow");
   textEl.classList.add("fade-text");
-
   setTimeout(()=>{
     textEl.innerText="If I’m calm now, it’s because you taught me how staying feels.";
     textEl.classList.remove("fade-text");
   },800);
 };
+
+/* Valentine actions */
+if(today===14){
+  document.getElementById("actions").innerHTML=
+    `<button onclick="yes()">YES 💖</button>
+     <button onclick="no()">NO 🙈</button>`;
+}
+function yes(){textEl.innerText="Happiest ending unlocked 💍💖";}
+function no(){textEl.innerText="Anime rule #1:\nThe story isn’t over yet 😉";}
 
 /* Audio */
 function startExperience(){
