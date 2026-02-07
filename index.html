@@ -12,9 +12,9 @@
 
 :root{
   --text-dark:#2b2b2b;
-  --text-soft:#444;
-  --card-bg:rgba(255,255,255,0.88);
-  --shadow:rgba(255,105,180,0.35);
+  --text-soft:#3d3d3d;
+  --card-bg:rgba(255,255,255,0.92);
+  --shadow:rgba(170,120,255,0.35);
 }
 
 body{
@@ -32,19 +32,19 @@ body{
 
 .card{
   background:var(--card-bg);
-  backdrop-filter:blur(14px);
+  backdrop-filter:blur(16px);
   padding:48px 38px;
-  border-radius:32px;
+  border-radius:34px;
   text-align:center;
   width:90%;
   max-width:540px;
-  box-shadow:0 20px 80px var(--shadow);
+  box-shadow:0 25px 90px var(--shadow);
   animation:float 6s ease-in-out infinite;
   transition:box-shadow 1s ease;
 }
 
 .card.soft-glow{
-  box-shadow:0 0 70px rgba(255,182,193,0.55);
+  box-shadow:0 0 80px rgba(190,140,255,0.6);
 }
 
 @keyframes float{
@@ -82,21 +82,15 @@ p{
   50%{transform:scale(1.22)}
 }
 
-/* Effects */
-.sakura,.bubu,.rain{
+.sakura{
   position:absolute;
   top:-10%;
-  opacity:0.45;
+  opacity:0.4;
+  animation:fall linear infinite;
   pointer-events:none;
 }
 
-.sakura{animation:fall linear infinite}
-.bubu{animation:fallBubu linear infinite}
-.rain{animation:fallRain linear infinite}
-
 @keyframes fall{to{transform:translateY(120vh) rotate(360deg)}}
-@keyframes fallBubu{to{transform:translateY(120vh) rotate(-10deg)}}
-@keyframes fallRain{to{transform:translateY(120vh)}}
 
 /* Toast */
 .toast{
@@ -149,6 +143,7 @@ p{
   <div class="heart" id="heart">💗</div>
   <h1 id="title"></h1>
   <p id="text"></p>
+  <div id="actions"></div>
 </div>
 
 <div class="toast" id="toast">🌙 New episode unlocked</div>
@@ -163,9 +158,9 @@ const episodes={
   7:{t:"Episode 5: Comfort Arc",m:"Some days don’t need fixing.\nThey just need someone who stays.",bg:"linear-gradient(135deg,#dfe9f3,#eef4fa)"},
   8:{
     t:"Episode 6: Growing Feelings",
-    m:"There’s a moment when liking someone becomes something softer and deeper.\n\nWhen their presence starts to steady you.\nWhen their name feels familiar in your chest.",
-    second:"It doesn’t rush.\nIt doesn’t demand.\nIt simply grows.\n\nAnd one day you realize — this feeling stayed.\nNot because it was loud.\nBut because it felt like home.",
-    bg:"linear-gradient(135deg,#ffe4ec,#ffd6e5)"
+    m:"There’s a moment when liking someone becomes something softer and deeper.\n\nWhen their presence steadies you.\nWhen their name feels familiar in your chest.",
+    second:"It doesn’t rush.\nIt doesn’t demand.\nIt simply grows.\n\nOne day you realize — this feeling stayed.\nNot because it was loud.\nBut because it felt like home.",
+    bg:"radial-gradient(circle at top,#f3e8ff 0%,#e6d9ff 35%,#d9c9f2 65%,#f7d9e3 100%)"
   },
   9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect.\nI want honest.\nI want you.",bg:"linear-gradient(135deg,#f3d9ff,#f9edff)"},
   10:{t:"Episode 8: Countdown",m:"Valentine’s is getting closer.\nAnd my heart knows it.",bg:"linear-gradient(135deg,#fff6d9,#fffbea)"},
@@ -178,13 +173,13 @@ const episodes={
 /* ========= INIT ========= */
 const today=new Date().getDate();
 const ep=episodes[today]||episodes[3];
-document.body.style.background=ep.bg;
 
+document.body.style.background=ep.bg;
 document.getElementById("title").innerText=ep.t;
 const textEl=document.getElementById("text");
 textEl.innerText=ep.m;
 
-/* Sakura default */
+/* Sakura */
 for(let i=0;i<28;i++){
   const s=document.createElement("div");
   s.className="sakura";
@@ -195,7 +190,7 @@ for(let i=0;i<28;i++){
   document.body.appendChild(s);
 }
 
-/* Feb 8 second scene transition */
+/* Feb 8 second scene */
 let revealed=false;
 document.getElementById("heart").onclick=()=>{
   if(today!==8 || revealed) return;
@@ -208,6 +203,15 @@ document.getElementById("heart").onclick=()=>{
     textEl.classList.remove("fade-text");
   },900);
 };
+
+/* Valentine actions */
+if(today===14){
+  document.getElementById("actions").innerHTML=
+    `<button onclick="yes()">YES 💖</button>
+     <button onclick="no()">NO 🙈</button>`;
+}
+function yes(){textEl.innerText="Happiest ending unlocked 💍💖";}
+function no(){textEl.innerText="Anime rule #1:\nThe story isn’t over yet 😉";}
 
 /* Audio */
 function startExperience(){
