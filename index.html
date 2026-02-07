@@ -11,9 +11,10 @@
 *{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-  --text:#fff;
-  --card:rgba(255,255,255,0.28);
-  --shadow:rgba(255,105,180,.45);
+  --text-dark:#2b2b2b;
+  --text-soft:#444;
+  --card-bg:rgba(255,255,255,0.88);
+  --shadow:rgba(255,105,180,0.35);
 }
 
 body{
@@ -23,107 +24,113 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:opacity 1.2s ease, background 1.6s ease, filter 1s ease;
+  transition:opacity 1.2s ease, background 1.5s ease, filter 1s ease;
 }
 
 .fade-out{opacity:0}
-.dimmed{filter:brightness(.9)}
+.dimmed{filter:brightness(0.95)}
 
 .card{
-  background:var(--card);
-  backdrop-filter:blur(16px);
+  background:var(--card-bg);
+  backdrop-filter:blur(14px);
   padding:48px 38px;
   border-radius:32px;
   text-align:center;
   width:90%;
   max-width:540px;
-  box-shadow:0 0 90px var(--shadow);
-  animation:float 7s ease-in-out infinite;
+  box-shadow:0 20px 80px var(--shadow);
+  animation:float 6s ease-in-out infinite;
   transition:box-shadow 1s ease;
 }
-.card.glow{
-  box-shadow:0 0 120px rgba(255,182,193,.9);
+
+.card.soft-glow{
+  box-shadow:0 0 70px rgba(255,182,193,0.55);
 }
 
 @keyframes float{
   0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-18px)}
+  50%{transform:translateY(-14px)}
 }
 
 h1{
-  color:var(--text);
-  font-size:2.6rem;
-  text-shadow:0 0 25px currentColor;
+  color:var(--text-dark);
+  font-size:2.5rem;
+  font-weight:800;
 }
 
 p{
-  color:var(--text);
+  color:var(--text-soft);
   font-size:1.18rem;
-  margin-top:18px;
-  line-height:1.85;
+  margin-top:16px;
+  line-height:1.75;
   white-space:pre-line;
   transition:opacity .8s ease;
 }
+
 .fade-text{opacity:0}
 
 .heart{
-  font-size:3.6rem;
-  animation:beat 1.4s infinite;
+  font-size:3.5rem;
   cursor:pointer;
+  animation:beat 1.4s infinite;
+  user-select:none;
+  margin-bottom:10px;
 }
+
 @keyframes beat{
   0%,100%{transform:scale(1)}
-  50%{transform:scale(1.25)}
+  50%{transform:scale(1.22)}
 }
 
-.orb{
-  position:absolute;
-  border-radius:50%;
-  filter:blur(40px);
-  opacity:.35;
-  animation:drift linear infinite;
-}
-@keyframes drift{
-  to{transform:translateY(120vh)}
-}
-
-.sakura{
+/* Effects */
+.sakura,.bubu,.rain{
   position:absolute;
   top:-10%;
-  animation:fall linear infinite;
-}
-@keyframes fall{
-  to{transform:translateY(120vh) rotate(360deg)}
+  opacity:0.45;
+  pointer-events:none;
 }
 
+.sakura{animation:fall linear infinite}
+.bubu{animation:fallBubu linear infinite}
+.rain{animation:fallRain linear infinite}
+
+@keyframes fall{to{transform:translateY(120vh) rotate(360deg)}}
+@keyframes fallBubu{to{transform:translateY(120vh) rotate(-10deg)}}
+@keyframes fallRain{to{transform:translateY(120vh)}}
+
+/* Toast */
 .toast{
   position:fixed;
   bottom:30px;
   left:50%;
   transform:translateX(-50%);
-  background:rgba(0,0,0,0.75);
+  background:rgba(0,0,0,0.7);
   color:white;
   padding:14px 26px;
   border-radius:30px;
+  font-size:1rem;
   opacity:0;
-  transition:.6s;
+  transition:opacity .6s ease;
 }
 .toast.show{opacity:1}
 
+/* Audio overlay */
 .audio-overlay{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,0.6);
-  backdrop-filter:blur(10px);
+  backdrop-filter:blur(8px);
   display:flex;
   align-items:center;
   justify-content:center;
   z-index:999;
 }
 .audio-overlay button{
-  font-size:1.2rem;
-  padding:18px 38px;
+  font-size:1.1rem;
+  padding:18px 36px;
   border-radius:40px;
+  border:none;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -142,7 +149,6 @@ p{
   <div class="heart" id="heart">💗</div>
   <h1 id="title"></h1>
   <p id="text"></p>
-  <div id="actions"></div>
 </div>
 
 <div class="toast" id="toast">🌙 New episode unlocked</div>
@@ -150,83 +156,57 @@ p{
 <script>
 /* ========= EPISODES ========= */
 const episodes={
-  3:{t:"Episode 1: A Confession 🌸",m:"Lekha…\nIf this were an anime,\nthis is where the music fades\nand I finally say what my heart has known.",bg:"linear-gradient(120deg,#ff9a9e,#fad0c4)"},
-  4:{t:"Episode 2: You Appear",m:"You appear in my thoughts\nlike a scene I replay.",bg:"linear-gradient(120deg,#a18cd1,#fbc2eb)"},
-  5:{t:"Episode 3: The Us 🧸",m:"Some stories don’t rush.\nThey stay.\nThey grow.\nQuietly becoming ‘us’.",bg:"linear-gradient(120deg,#fad0c4,#ffd1ff)"},
-  6:{t:"Episode 4: Your Smile",m:"Your smile finds me on ordinary days and changes them.",bg:"linear-gradient(120deg,#e0c3fc,#8ec5fc)"},
-  7:{t:"Episode 5: Comfort Arc",m:"I don’t need perfect days.\nJust a place beside you.",bg:"linear-gradient(120deg,#2b5876,#4e4376)"},
+  3:{t:"Episode 1: A Confession 🌸",m:"If this were an anime, this is the moment where everything pauses.\nWhere I finally say what’s been quietly living in my heart.",bg:"linear-gradient(135deg,#ffd6d6,#ffecec)"},
+  4:{t:"Episode 2: You Appear",m:"You show up in my thoughts without warning.\nLike a scene I replay because it feels right.",bg:"linear-gradient(135deg,#e6d9ff,#f3edff)"},
+  5:{t:"Episode 3: The Us 🧸💕",m:"Every story has a pair worth rooting for.\nI hope one day, it’s us — choosing each other gently, every day.",bg:"linear-gradient(135deg,#fff1d6,#fff7e6)"},
+  6:{t:"Episode 4: Your Smile",m:"Your smile has a way of slowing my world.\nIt feels like peace arriving quietly.",bg:"linear-gradient(135deg,#e6e1ff,#f2efff)"},
+  7:{t:"Episode 5: Comfort Arc",m:"Some days don’t need fixing.\nThey just need someone who stays.",bg:"linear-gradient(135deg,#dfe9f3,#eef4fa)"},
   8:{
     t:"Episode 6: Growing Feelings",
-    m:
-`It didn’t happen all at once.
-
-There was no dramatic moment.
-Just quiet realizations.
-Soft pauses.
-And a heart learning where it belongs.`,
-    bg:"linear-gradient(135deg,#fdfbfb,#ebedee)",
-    secret:
-`And then there’s this part I don’t say out loud.
-
-That loving you feels like choosing —
-every day,
-without fear,
-without hesitation.
-
-If my heart feels steady now,
-it’s because it learned how to stay with you.`
+    m:"There’s a moment when liking someone becomes something softer and deeper.\n\nWhen their presence starts to steady you.\nWhen their name feels familiar in your chest.",
+    second:"It doesn’t rush.\nIt doesn’t demand.\nIt simply grows.\n\nAnd one day you realize — this feeling stayed.\nNot because it was loud.\nBut because it felt like home.",
+    bg:"linear-gradient(135deg,#ffe4ec,#ffd6e5)"
   },
-  9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect.\nI want you.",bg:"linear-gradient(120deg,#fccb90,#d57eeb)"},
-  10:{t:"Episode 8: Countdown",m:"Valentine’s is getting close.",bg:"linear-gradient(120deg,#fddb92,#d1fdff)"},
-  11:{t:"Episode 9: Every Timeline",m:"Every universe.\nStill you.",bg:"linear-gradient(120deg,#a1c4fd,#c2e9fb)"},
-  12:{t:"Episode 10: Two Days Left",m:"Almost there…",bg:"linear-gradient(120deg,#fbc8d4,#9795f0)"},
-  13:{t:"Episode 11: Tonight",m:"Tomorrow changes everything.",bg:"linear-gradient(120deg,#667eea,#764ba2)"},
-  14:{t:"Final Episode: Valentine’s 💖",m:"Lekha…\nWill you be my Valentine?",bg:"linear-gradient(120deg,#ff0844,#ffb199)"}
+  9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect.\nI want honest.\nI want you.",bg:"linear-gradient(135deg,#f3d9ff,#f9edff)"},
+  10:{t:"Episode 8: Countdown",m:"Valentine’s is getting closer.\nAnd my heart knows it.",bg:"linear-gradient(135deg,#fff6d9,#fffbea)"},
+  11:{t:"Episode 9: Every Timeline",m:"In every version of my life.\nI still find you.",bg:"linear-gradient(135deg,#e0ecff,#f0f6ff)"},
+  12:{t:"Episode 10: Two Days Left",m:"Almost there.\nAlmost brave enough.",bg:"linear-gradient(135deg,#f1e6ff,#f7f1ff)"},
+  13:{t:"Episode 11: Tonight",m:"Tomorrow changes something.\nI can feel it.",bg:"linear-gradient(135deg,#e6e6f2,#f1f1fa)"},
+  14:{t:"Final Episode: Valentine’s 💖",m:"Lekha…\nWill you choose me?\nToday — and after today too.",bg:"linear-gradient(135deg,#ff5c8a,#ff9bb8)"}
 };
 
 /* ========= INIT ========= */
-const today=new Date().getDate(); // set to 8 for testing
+const today=new Date().getDate();
 const ep=episodes[today]||episodes[3];
-
 document.body.style.background=ep.bg;
+
 document.getElementById("title").innerText=ep.t;
 const textEl=document.getElementById("text");
 textEl.innerText=ep.m;
 
-/* Ambient */
-for(let i=0;i<4;i++){
-  const o=document.createElement("div");
-  o.className="orb";
-  o.style.width=o.style.height=(200+Math.random()*200)+"px";
-  o.style.left=Math.random()*100+"vw";
-  o.style.background="radial-gradient(circle,rgba(255,182,193,.8),transparent)";
-  o.style.animationDuration=(20+Math.random()*20)+"s";
-  document.body.appendChild(o);
-}
-for(let i=0;i<26;i++){
+/* Sakura default */
+for(let i=0;i<28;i++){
   const s=document.createElement("div");
   s.className="sakura";
   s.innerText="🌸";
   s.style.left=Math.random()*100+"vw";
   s.style.fontSize=(14+Math.random()*22)+"px";
-  s.style.animationDuration=(9+Math.random()*10)+"s";
+  s.style.animationDuration=(10+Math.random()*10)+"s";
   document.body.appendChild(s);
 }
 
-/* 💗 Heart interaction (Feb 8 only) */
+/* Feb 8 second scene transition */
 let revealed=false;
 document.getElementById("heart").onclick=()=>{
-  if(today!==8 || revealed || !ep.secret) return;
+  if(today!==8 || revealed) return;
   revealed=true;
-
   document.body.classList.add("dimmed");
-  document.getElementById("card").classList.add("glow");
+  document.getElementById("card").classList.add("soft-glow");
   textEl.classList.add("fade-text");
-
   setTimeout(()=>{
-    textEl.innerText=ep.secret;
+    textEl.innerText=ep.second;
     textEl.classList.remove("fade-text");
-  },800);
+  },900);
 };
 
 /* Audio */
@@ -235,19 +215,13 @@ function startExperience(){
   a.volume=0;
   a.play().then(()=>{
     let v=0;
-    const f=setInterval(()=>{if(v>=1)clearInterval(f);a.volume=v;v+=0.05},100);
+    const f=setInterval(()=>{
+      if(v>=1)clearInterval(f);
+      a.volume=v; v+=0.05;
+    },100);
   });
   document.getElementById("audioOverlay").style.display="none";
 }
-
-/* Valentine actions */
-if(today===14){
-  document.getElementById("actions").innerHTML=
-   `<button onclick="yes()">YES 💖</button>
-    <button onclick="no()">NO 🙈</button>`;
-}
-function yes(){textEl.innerText="Happiest ending unlocked 💍💖";}
-function no(){textEl.innerText="The story isn’t over yet 😉";}
 
 /* Midnight refresh */
 const now=new Date();
