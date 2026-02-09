@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Lekha 🌙</title>
+<title>Lekha 🌸</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
@@ -11,74 +11,61 @@
 *{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-  --text-dark:#2b2b2b;
-  --text-soft:#3b3b3b;
-  --card-bg:rgba(255,255,255,0.9);
+  --text:#fff;
+  --card-bg:rgba(255,255,255,0.22);
 }
 
 body{
   font-family:'Nunito',sans-serif;
   height:100vh;
-  overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:opacity 1.2s ease, background 1.5s ease, filter 1s ease;
+  overflow:hidden;
+  transition:background 1.5s ease,opacity 1.2s ease;
 }
 
 .fade-out{opacity:0}
-.dimmed{filter:brightness(0.9)}
 
 .card{
   background:var(--card-bg);
-  backdrop-filter:blur(18px);
-  padding:50px 40px;
-  border-radius:36px;
+  backdrop-filter:blur(14px);
+  padding:45px 35px;
+  border-radius:30px;
   text-align:center;
   width:90%;
-  max-width:560px;
-  box-shadow:0 30px 120px rgba(120,120,255,0.35);
-  animation:float 7s ease-in-out infinite;
-  transition:box-shadow 1s ease;
-  position:relative;
-  z-index:2;
-}
-
-.card.deep-glow{
-  box-shadow:0 0 120px rgba(180,150,255,0.7);
+  max-width:520px;
+  box-shadow:0 0 60px rgba(255,255,255,0.35);
+  animation:float 6s ease-in-out infinite;
 }
 
 @keyframes float{
   0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-16px)}
+  50%{transform:translateY(-15px)}
 }
 
 h1{
-  color:var(--text-dark);
+  color:var(--text);
   font-size:2.5rem;
-  font-weight:800;
+  text-shadow:0 0 18px rgba(255,255,255,.7);
 }
 
 p{
-  color:var(--text-soft);
-  font-size:1.18rem;
-  margin-top:18px;
-  line-height:1.8;
+  color:var(--text);
+  font-size:1.15rem;
+  margin-top:15px;
+  line-height:1.75;
   white-space:pre-line;
-  transition:opacity .9s ease, transform .9s ease;
+  transition:opacity .8s ease;
 }
 
-.fade-text{
-  opacity:0;
-  transform:translateY(10px);
-}
+.fade-text{opacity:0}
 
 .heart{
-  font-size:3.6rem;
+  font-size:3.4rem;
   cursor:pointer;
   animation:beat 1.4s infinite;
   user-select:none;
-  margin-bottom:12px;
 }
 
 @keyframes beat{
@@ -86,27 +73,46 @@ p{
   50%{transform:scale(1.25)}
 }
 
-/* 🌠 Starfield (Feb 9 only) */
-.star{
+/* Effects */
+.sakura,.orb{
   position:absolute;
-  width:2px;
-  height:2px;
-  background:white;
-  border-radius:50%;
-  opacity:0.8;
-  animation:twinkle 4s infinite ease-in-out;
+  opacity:.7;
 }
 
-@keyframes twinkle{
-  0%,100%{opacity:0.3}
-  50%{opacity:1}
+.sakura{animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(120vh) rotate(360deg)}}
+
+.orb{
+  border-radius:50%;
+  background:rgba(255,255,255,.6);
+  animation:floatOrb ease-in-out infinite;
 }
+@keyframes floatOrb{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-25px)}
+}
+
+/* Toast */
+.toast{
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.7);
+  color:white;
+  padding:14px 26px;
+  border-radius:30px;
+  font-size:1rem;
+  opacity:0;
+  transition:.6s;
+}
+.toast.show{opacity:1}
 
 /* Audio overlay */
 .audio-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.6);
+  background:rgba(0,0,0,.6);
   backdrop-filter:blur(8px);
   display:flex;
   align-items:center;
@@ -117,8 +123,6 @@ p{
   font-size:1.1rem;
   padding:18px 36px;
   border-radius:40px;
-  border:none;
-  cursor:pointer;
 }
 </style>
 </head>
@@ -126,42 +130,43 @@ p{
 <body>
 
 <div class="audio-overlay" id="audioOverlay">
-  <button onclick="startExperience()">Tap to begin 🌙🎶</button>
+  <button onclick="startExperience()">Tap to start the story 🎶</button>
 </div>
 
 <audio id="music" loop preload="auto">
   <source src="assets/music.mp3" type="audio/mpeg">
 </audio>
 
-<div class="card" id="card">
+<div class="card">
   <div class="heart" id="heart">💗</div>
   <h1 id="title"></h1>
   <p id="text"></p>
 </div>
 
+<div class="toast" id="toast">🌙 New episode unlocked</div>
+
 <script>
-/* ========= EPISODES ========= */
 const episodes={
-  9:{
-    t:"Episode 7: The Night I Knew 🌙",
-    m:"There are nights when everything slows down.\n\nThe world gets quiet.\nAnd your thoughts finally tell the truth.\n\nTonight feels like that.\nAnd somehow… it’s you.",
-    second:"I didn’t fall loudly.\nI didn’t rush.\n\nI stayed.\nI noticed.\nI cared.\n\nAnd one night, under a sky like this,\nI realized I wasn’t imagining it anymore.\n\nI was choosing you.",
-    bg:"radial-gradient(circle at top,#1b1f3b 0%,#2b235a 40%,#3b2a6f 70%,#120f2a 100%)"
+  3:{t:"Episode 1: A Confession 🌸",m:"Will you be mine?",bg:"#ffd6d6"},
+  4:{t:"Episode 2: You Appear",m:"You appear like a scene I replay.",bg:"#e6d9ff"},
+  5:{t:"Episode 3: The Us 🧸💕",m:"I hope one day it’s us.",bg:"#fff1d6"},
+  6:{t:"Episode 4: Your Smile",m:"Your smile is where peace begins.",bg:"#e6e1ff"},
+  7:{t:"Episode 5: Comfort Arc",m:"Some days just need someone who stays.",bg:"#2f3e55"},
+  8:{t:"Episode 6: Growing Feelings",m:"My heart has been buffering… and it’s you.",bg:"#d9f7ff"},
+  9:{t:"Episode 7: Almost a Promise",m:"I don’t want perfect. I want you.",bg:"#f3d9ff"},
+  10:{
+    t:"Episode: The Quiet Realisation ✨",
+    m:"Some feelings don’t announce themselves.\nThey settle in quietly.\n\nOne day you realise\nyou’re no longer searching —\nbecause your heart already knows where it belongs.",
+    reveal:"I didn’t fall all at once.\nI stayed.\nI noticed.\n\nAnd somewhere between ordinary moments,\nyou became my constant thought.\n\nThat’s when I knew —\nthis wasn’t fleeting.\nThis was real.",
+    bg:"linear-gradient(135deg,#c3b4ff,#8b7ccf,#2f2b55)",
+    effect:"orbs"
   },
-  3:{t:"Episode 1: A Confession 🌸",m:"If this were an anime, this is the moment where everything pauses.",bg:"#ffd6d6"},
-  4:{t:"Episode 2: You Appear",m:"You show up in my thoughts without warning.",bg:"#e6d9ff"},
-  5:{t:"Episode 3: The Us",m:"Every story has a pair worth rooting for.",bg:"#fff1d6"},
-  6:{t:"Episode 4: Your Smile",m:"Your smile slows my world.",bg:"#e6e1ff"},
-  7:{t:"Episode 5: Comfort Arc",m:"Some days just need someone who stays.",bg:"#dfe9f3"},
-  8:{t:"Episode 6: Growing Feelings",m:"There’s a moment when liking becomes deeper.",bg:"#ffe4ec"},
-  10:{t:"Episode 8: Countdown",m:"Valentine’s is getting closer.",bg:"#fff6d9"},
-  11:{t:"Episode 9: Every Timeline",m:"Every version of my life, still you.",bg:"#e0ecff"},
-  12:{t:"Episode 10: Two Days Left",m:"Almost there.",bg:"#f1e6ff"},
-  13:{t:"Episode 11: Tonight",m:"Tomorrow changes something.",bg:"#e6e6f2"},
-  14:{t:"Final Episode: Valentine’s 💖",m:"Lekha… will you choose me?",bg:"#ff5c8a"}
+  11:{t:"Episode 9: Every Timeline",m:"Every universe. Still you.",bg:"#e0ecff"},
+  12:{t:"Episode 10: Two Days Left",m:"Almost there…",bg:"#f1e6ff"},
+  13:{t:"Episode 11: Tonight",m:"Tomorrow changes everything.",bg:"#3b3b5f"},
+  14:{t:"Final Episode: Valentine’s 💖",m:"Will you be my Valentine?",bg:"#ff5c8a"}
 };
 
-/* ========= INIT ========= */
 const today=new Date().getDate();
 const ep=episodes[today]||episodes[3];
 
@@ -170,30 +175,39 @@ document.getElementById("title").innerText=ep.t;
 const textEl=document.getElementById("text");
 textEl.innerText=ep.m;
 
-/* 🌠 Stars for Feb 9 */
-if(today===9){
-  for(let i=0;i<80;i++){
-    const star=document.createElement("div");
-    star.className="star";
-    star.style.left=Math.random()*100+"vw";
-    star.style.top=Math.random()*100+"vh";
-    star.style.animationDelay=Math.random()*4+"s";
-    document.body.appendChild(star);
+/* Effects */
+if(ep.effect==="orbs"){
+  for(let i=0;i<25;i++){
+    const o=document.createElement("div");
+    o.className="orb";
+    o.style.width=o.style.height=(6+Math.random()*10)+"px";
+    o.style.left=Math.random()*100+"vw";
+    o.style.top=Math.random()*100+"vh";
+    o.style.animationDuration=(8+Math.random()*10)+"s";
+    document.body.appendChild(o);
+  }
+}else{
+  for(let i=0;i<28;i++){
+    const s=document.createElement("div");
+    s.className="sakura";
+    s.innerText="🌸";
+    s.style.left=Math.random()*100+"vw";
+    s.style.fontSize=(14+Math.random()*22)+"px";
+    s.style.animationDuration=(8+Math.random()*10)+"s";
+    document.body.appendChild(s);
   }
 }
 
-/* Heart → second scene (Feb 9) */
-let revealed=false;
+/* Heart reveal */
+let done=false;
 document.getElementById("heart").onclick=()=>{
-  if(today!==9 || revealed) return;
-  revealed=true;
-  document.body.classList.add("dimmed");
-  document.getElementById("card").classList.add("deep-glow");
+  if(done||!ep.reveal) return;
+  done=true;
   textEl.classList.add("fade-text");
   setTimeout(()=>{
-    textEl.innerText=ep.second;
+    textEl.innerText=ep.reveal;
     textEl.classList.remove("fade-text");
-  },1000);
+  },900);
 };
 
 /* Audio */
@@ -213,7 +227,13 @@ function startExperience(){
 /* Midnight refresh */
 const now=new Date();
 const midnight=new Date(); midnight.setHours(24,0,0,0);
-setTimeout(()=>location.reload(),midnight-now);
+setTimeout(()=>{
+  document.getElementById("toast").classList.add("show");
+  setTimeout(()=>{
+    document.body.classList.add("fade-out");
+    setTimeout(()=>location.reload(),1200);
+  },1500);
+},midnight-now);
 </script>
 
 </body>
